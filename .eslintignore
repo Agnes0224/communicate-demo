@@ -1,0 +1,4 @@
+.eslintignore
+.eslintrc.js
+src/App.js
+src/App.test.js
