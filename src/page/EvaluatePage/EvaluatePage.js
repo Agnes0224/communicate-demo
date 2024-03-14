@@ -17,7 +17,6 @@ const EvaluatePage = () => {
   };
 
   const onLoadMore = () => {
-
   };
 
   return (
