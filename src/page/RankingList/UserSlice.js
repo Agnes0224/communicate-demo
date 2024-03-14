@@ -1,18 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { supabase } from '../../api/supabaseClient';
 
 const initialState = {
   users: [],
   status: 'idle',
 };
 
-export const fetchUsers = createAsyncThunk('user/fetchUsers', async(type) => {
-  const response = await supabase
-  .from('user-ranking')
-  .select('*')
-  .eq('type', type);
-  // console.log(response);
-  return response.data;
+export const fetchUsers = createAsyncThunk('user/fetchUsers', async() => {
+  // const response = await supabase
+  // .from('user-ranking')
+  // .select('*')
+  // .eq('type', type);
+  // // console.log(response);
+  // return response.data;
 });
 
 export const userSlice = createSlice({

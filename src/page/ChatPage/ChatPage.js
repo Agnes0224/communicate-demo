@@ -1,8 +1,9 @@
+/* eslint-disable camelcase */
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Button, Col, Input, Image, Menu, Modal, Row, Typography } from 'antd';
+import { Avatar, Button, Col, Input, Menu, Modal, Row, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { addMsg, selectMsg, fetchQuestion } from './ChatSlice';
+import { cleanMsg, selectQuestion, selectAnswer, fetchQuestion, fetchAnswer } from './ChatSlice';
 import { useSelector, useDispatch } from 'react-redux';
 // import testImg from '../../img/test.png';
 import './chat.css';
@@ -36,10 +37,10 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // const qusetion = useSelector(selectQuestion);
-  // const answer = useSelector(selectAnswer);
-  const chat = useSelector(selectMsg);
-  // console.log(chat);
+  const qusetion = useSelector(selectQuestion);
+  const answer = useSelector(selectAnswer);
+  // const chat = useSelector(selectMsg);
+  // console.log(qusetion);
 
   // 切换分类
   const onClick = (e) => {
@@ -48,13 +49,12 @@ const ChatPage = () => {
 
   // 发送消息
   const sendMsg = () => {
-    const newMessage = [{
-      msgId: chat.length + 1, // 简单的方式生成新消息的ID
-      content: inputValue,
-      user: 'You',
-      isSender: true,
-    }];
-    dispatch(addMsg(newMessage)); // 更新消息列表
+    const newAnswer = {
+      // msgId: chat.length + 1, // 简单的方式生成新消息的ID
+      question_id: 1,
+      text: inputValue,
+    };
+    dispatch(fetchAnswer(newAnswer)); // 更新消息列表
     setInputValue(''); // 清空输入框
     setIsOpen(true);
   };
@@ -70,8 +70,8 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
-    dispatch(addMsg([]));
-    dispatch(fetchQuestion(currentChat));
+    dispatch(cleanMsg());
+    dispatch(fetchQuestion(1));
   }, [currentChat]);
 
   // useEffect(() => {
@@ -85,7 +85,7 @@ const ChatPage = () => {
         <Menu onClick={onClick} selectedKeys={[currentChat]} mode="horizontal" items={items} />
         <Row justify={'center'} className="chatBox">
           <Col span={22}>
-            {chat.map((item) => {
+            {/* {chat.map((item) => {
               return item.isSender
                 ? <Row justify={'end'} key={item.msgId} style={{ marginBottom: '16px' }}>
                   <div className="dialog">{item.content}</div>
@@ -93,12 +93,24 @@ const ChatPage = () => {
                 </Row>
                 : <Row gutter={16} key={item.msgId} style={{ marginBottom: '16px' }}>
                   <Avatar icon={<UserOutlined />} />
+                  //判断为文本还是文字问题
                   {item.msgType === 'text'
                     ? <div className="dialog">{item.content}</div>
                     : <Image src={item.src} />
                   }
                 </Row>;
-            })}
+            })} */}
+            <Row gutter={16} style={{ marginBottom: '16px' }}>
+              <Avatar icon={<UserOutlined />} />
+              <div className="dialog">{qusetion.question_content}</div>
+            </Row>
+            {answer.answer_id
+              ? <Row justify={'end'} style={{ marginBottom: '16px' }}>
+                <div className="dialog">{answer.answer_content}</div>
+                <Avatar icon={<UserOutlined />} />
+              </Row>
+              : <></>
+            }
           </Col>
         </Row>
         <Row gutter={32} justify={'center'} align={'bottom'}>
