@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Button, Col, Input, Image, Menu, Modal, Row, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { addMsg, selectMsg, fetchQuestion } from './ChatSlice';
+import { useSelector, useDispatch } from 'react-redux';
 // import testImg from '../../img/test.png';
 import './chat.css';
 
@@ -25,54 +27,34 @@ const items = [
   },
 ];
 
-// 模拟聊天数据
-const initialMessages = [
-  {
-    msgId: 1,
-    msgType: 'text',
-    content: '你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx你好xxxx',
-    user: 'Chat',
-    isSender: false,
-  },
-  // {
-  //   msgId: 2,
-  //   msgType: 'img',
-  //   src: testImg,
-  //   user: 'Chat',
-  //   isSender: false,
-  // },
-  // {
-  //   msgId: 2,
-  //   content: '回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala回答balabala',
-  //   user: 'You',
-  //   isSender: true,
-  // },
-];
-
 const ChatPage = () => {
   // 设置当前对话分类
   const [currentChat, setCurrentChat] = useState('order');
-  const [inputValue, setInputValue] = useState('');
-  // 设置消息管理
-  const [messages, setMessages] = useState(initialMessages);
+  const [inputValue, setInputValue] = useState([]);
   // 设置对话框弹出
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // const qusetion = useSelector(selectQuestion);
+  // const answer = useSelector(selectAnswer);
+  const chat = useSelector(selectMsg);
+  // console.log(chat);
+
   // 切换分类
   const onClick = (e) => {
     setCurrentChat(e.key);
-    // console.log(e.key);
   };
 
   // 发送消息
   const sendMsg = () => {
-    const newMessage = {
-      msgId: messages.length + 1, // 简单的方式生成新消息的ID
+    const newMessage = [{
+      msgId: chat.length + 1, // 简单的方式生成新消息的ID
       content: inputValue,
       user: 'You',
       isSender: true,
-    };
-    setMessages([...messages, newMessage]); // 更新消息列表
+    }];
+    dispatch(addMsg(newMessage)); // 更新消息列表
     setInputValue(''); // 清空输入框
     setIsOpen(true);
   };
@@ -88,16 +70,22 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
-    setMessages(initialMessages);
+    dispatch(addMsg([]));
+    dispatch(fetchQuestion(currentChat));
   }, [currentChat]);
+
+  // useEffect(() => {
+  //   chat = [...qusetion, ...answer];
+  //   console.log(chat);
+  // }, [qusetion, answer]);
 
   return (
     <Row justify={'center'}>
-      <Col xs={24} lg={16} style={{ background: '#fff', padding: '8px 0 24px' }}>
+      <Col xs={24} lg={14} style={{ background: '#fff', padding: '8px 0 24px' }}>
         <Menu onClick={onClick} selectedKeys={[currentChat]} mode="horizontal" items={items} />
         <Row justify={'center'} className="chatBox">
           <Col span={22}>
-            {messages.map((item) => {
+            {chat.map((item) => {
               return item.isSender
                 ? <Row justify={'end'} key={item.msgId} style={{ marginBottom: '16px' }}>
                   <div className="dialog">{item.content}</div>

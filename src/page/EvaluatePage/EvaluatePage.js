@@ -22,7 +22,7 @@ const EvaluatePage = () => {
 
   return (
     <Row justify={'center'}>
-      <Col xs={24} lg={16} style={{ background: '#fff', padding: '8px 0 24px' }}>
+      <Col xs={24} lg={14} style={{ background: '#fff', padding: '8px 0 24px' }}>
         <Card bordered={false}>
           <Row align={'bottom'} justify={'space-around'}>
             <Col>
@@ -41,24 +41,33 @@ const EvaluatePage = () => {
               renderItem={item => (
                 <List.Item
                   actions={[
-                    <Button
-                      type="text"
-                      icon={<LikeOutlined />}
-                      onClick={handleLikeClick}
-                      key="like"
-                    />,
-                    <Button
-                      type="text"
-                      icon={<DislikeOutlined />}
-                      onClick={handleLikeClick}
-                      key="dislike"
-                    />,
-                    <Button
-                      type="text"
-                      icon={<StarOutlined />}
-                      onClick={handleStarClick}
-                      key="star"
-                    />,
+                    <Row key="like" >
+                      <Button
+                        type="text"
+                        icon={<LikeOutlined />}
+                        onClick={handleLikeClick}
+                        key="like"
+                      />
+                      <Typography>{item.likes}</Typography>
+                    </Row>,
+                    <Row key="dislike" >
+                      <Button
+                        type="text"
+                        icon={<DislikeOutlined />}
+                        onClick={handleLikeClick}
+                        key="dislike"
+                      />
+                      <Typography>{item.likes}</Typography>
+                    </Row>,
+                    <Row key="star" >
+                      <Button
+                        type="text"
+                        icon={<StarOutlined />}
+                        onClick={handleStarClick}
+                        key="star"
+                      />
+                      <Typography>{item.stars}</Typography>
+                    </Row>,
                   ]}
                 >
                   <List.Item.Meta
