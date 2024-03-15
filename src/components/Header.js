@@ -8,9 +8,9 @@ const HeaderNav = () => {
     <Header style={{ background: '#fff', padding: 0 }}>
       <Row justify={'space-around'}>
         <Col>
-          <Link to="/">聊天页面</Link>
+          <Link to="/">首页</Link>
         </Col>
-        <Col>
+        {/* <Col>
           <Link to="/evaluate">评估页面</Link>
         </Col>
         <Col>
@@ -18,7 +18,7 @@ const HeaderNav = () => {
         </Col>
         <Col>
           <Link to="/my">个人空间</Link>
-        </Col>
+        </Col> */}
       </Row>
     </Header>
   );

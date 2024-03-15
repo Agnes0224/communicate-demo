@@ -5,22 +5,25 @@ import { http } from '../../api/server';
 const initialState = {
   answers: [
     {
-      answer_user_id: 1,
+      answerUserId: 1,
       userName: 'user1',
-      answer_content: '回答balabala',
+      answerContent: '回答balabala',
       like: 231,
-      un_like: 21,
+      unLike: 21,
       favorite: 3411,
-      answer_score: 100,
+      answerScore: 100,
     },
     {
-      answer_user_id: 2,
+      answerUserId: 2,
       userName: 'user2',
-      answer_content: '回答balabala回答balabala',
+      answerContent: '回答balabala回答balabala',
       like: 231,
-      un_like: 12,
+      unLike: 12,
       favorite: 121,
-      answer_score: 91,
+      isLike: 1,
+      isUnLike: 0,
+      isFavorite: 1,
+      answerScore: 91,
     },
   ],
   evaluate: [],
@@ -35,15 +38,41 @@ export const fetchEvaluate = createAsyncThunk('evaluate/fetchEvaluate', async(an
 
 // 获取更多回答
 export const fetchAnswer = createAsyncThunk('answer/fetchAnswer', async(params) => {
-  const response = await http.get('/training/getQuestionAnswers', params);
-  console.log(response);
-  return response.data.data.records;
+  const response = await http.get('/training/answer/getQuestionAnswers', params);
+  // console.log(response);
+  return response.data.data.data;
 });
 
 export const answerSlice = createSlice({
   name: 'answer',
   initialState,
-  reducers: {},
+  reducers: {
+    handleHighlight(state, action) {
+      const { answerUserId, type } = action.payload;
+      const answer = state.answers.find(answer => answer.answerUserId === answerUserId);
+      switch (type) {
+        case 'like':
+          if (answer.isUnLike) {
+            answer.isLike = true;
+            answer.isUnLike = false;
+          } else {
+            answer.isLike = !answer.isLike;
+          }
+          break;
+        case 'unLike':
+          if (answer.isLike) {
+            answer.isLike = false;
+            answer.isUnLike = true;
+          } else {
+            answer.isUnLike = !answer.isUnLike;
+          }
+          break;
+        case 'favorite':
+          answer.isFavorite = !answer.isFavorite;
+          break;
+      }
+    },
+  },
   extraReducers(builder) {
     builder
     .addCase(fetchEvaluate.fulfilled, (state, action) => {
@@ -56,6 +85,8 @@ export const answerSlice = createSlice({
 });
 
 export default answerSlice.reducer;
+
+export const { handleHighlight } = answerSlice.actions;
 
 export const selectAnswers = (state) => state.answer.answers;
 export const selectEvaluate = (state) => state.answer.evaluate;

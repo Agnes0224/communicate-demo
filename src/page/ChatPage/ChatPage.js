@@ -1,68 +1,43 @@
 /* eslint-disable camelcase */
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Avatar, Button, Col, Input, Menu, Modal, Row, Typography } from 'antd';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Avatar, Button, Col, Input, Modal, Row, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { cleanMsg, selectQuestion, selectAnswer, fetchQuestion, fetchAnswer } from './ChatSlice';
+import { addMsg, cleanMsg, selectQuestion, selectAnswer, fetchQuestion, fetchAnswer } from './ChatSlice';
 import { useSelector, useDispatch } from 'react-redux';
+// import IconText from '../../components/IconText';
 // import testImg from '../../img/test.png';
 import './chat.css';
 
-// 模拟分类数据
-const items = [
-  {
-    label: '下单咨询',
-    key: 'order',
-  },
-  {
-    label: '设备咨询',
-    key: 'equipment',
-  },
-  {
-    label: '模拟计算',
-    key: 'calculate',
-  },
-  {
-    label: '售后服务',
-    key: 'service',
-  },
-];
-
 const ChatPage = () => {
-  // 设置当前对话分类
-  const [currentChat, setCurrentChat] = useState('order');
   const [inputValue, setInputValue] = useState([]);
   // 设置对话框弹出
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { questionId } = useParams();
 
+  // 获取问题和回答
   const qusetion = useSelector(selectQuestion);
   const answer = useSelector(selectAnswer);
-  // const chat = useSelector(selectMsg);
-  // console.log(qusetion);
-
-  // 切换分类
-  const onClick = (e) => {
-    setCurrentChat(e.key);
-  };
 
   // 发送消息
   const sendMsg = () => {
     const newAnswer = {
-      // msgId: chat.length + 1, // 简单的方式生成新消息的ID
-      question_id: 1,
-      text: inputValue,
+      questionId: questionId,
+      answerUserId: 1,
+      answerContent: inputValue,
     };
-    dispatch(fetchAnswer(newAnswer)); // 更新消息列表
-    setInputValue(''); // 清空输入框
+    dispatch(fetchAnswer(newAnswer));
+    dispatch(addMsg(newAnswer));
+    setInputValue('');
     setIsOpen(true);
   };
 
   // 跳转评价页面
   const changeEvaluate = () => {
     setIsOpen(false);
-    navigate('/evaluate');
+    navigate(`/evaluate/${questionId}`);
   };
 
   const handleCancel = () => {
@@ -71,18 +46,12 @@ const ChatPage = () => {
 
   useEffect(() => {
     dispatch(cleanMsg());
-    dispatch(fetchQuestion(1));
-  }, [currentChat]);
-
-  // useEffect(() => {
-  //   chat = [...qusetion, ...answer];
-  //   console.log(chat);
-  // }, [qusetion, answer]);
+    dispatch(fetchQuestion(questionId));
+  }, []);
 
   return (
     <Row justify={'center'}>
       <Col xs={24} lg={14} style={{ background: '#fff', padding: '8px 0 24px' }}>
-        <Menu onClick={onClick} selectedKeys={[currentChat]} mode="horizontal" items={items} />
         <Row justify={'center'} className="chatBox">
           <Col span={22}>
             {/* {chat.map((item) => {
@@ -102,11 +71,11 @@ const ChatPage = () => {
             })} */}
             <Row gutter={16} style={{ marginBottom: '16px' }}>
               <Avatar icon={<UserOutlined />} />
-              <div className="dialog">{qusetion.question_content}</div>
+              <div className="dialogQ">{qusetion.questionContent}</div>
             </Row>
-            {answer.answer_id
+            {answer.answerUserId
               ? <Row justify={'end'} style={{ marginBottom: '16px' }}>
-                <div className="dialog">{answer.answer_content}</div>
+                <div className="dialogA">{answer.answerContent}</div>
                 <Avatar icon={<UserOutlined />} />
               </Row>
               : <></>
@@ -117,7 +86,10 @@ const ChatPage = () => {
           <Col xs={16} sm={18} lg={20}><Input.TextArea rows={3} value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="请输入你的回答" /></Col>
           <Button type="primary" onClick={sendMsg}>Submit</Button>
           <Modal open={isOpen} onOk={changeEvaluate} onCancel={handleCancel} >
-            <Typography>已完成对话练习</Typography>
+            <Typography>你已完成对话练习，请对本问题做出评价</Typography>
+            {/* <IconText icon={LikeOutlined} hightlight={qusetion.isLike} type={'like'} answerUserId={qusetion.answerUserId} key="like" />,
+            <IconText icon={DislikeOutlined} hightlight={qusetion.isUnLike} type={'unLike' } answerUserId={qusetion.answerUserId} key="like" />,
+            <IconText icon={StarOutlined} hightlight={qusetion.isFavorite} type={'favorite'} answerUserId={qusetion.answerUserId} key="like" /> */}
           </Modal>
         </Row>
       </Col>

@@ -1,24 +1,30 @@
-/* eslint-disable camelcase */
 import React, { useEffect } from 'react';
-import { Button, Card, Col, Row, Typography } from 'antd';
+import { Button, Card, Col, Row, Typography, Popover } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectAnswers, selectEvaluate, fetchEvaluate, fetchAnswer } from './AnswerSlice';
 import PostAnswer from '../../components/PostAnswer';
-const { Title } = Typography;
+import { useParams } from 'react-router-dom';
+const { Title, Paragraph } = Typography;
 
 const EvaluatePage = () => {
+  const { questionId } = useParams();
   const dispatch = useDispatch();
   // 获取回复
   const answer = useSelector(selectAnswers);
-  console.log(answer);
   // 获取ai评分
   const evaluate = useSelector(selectEvaluate);
 
-  const answer_id = 1;
+  const answerId = 1;
+  const link = 'http://localhost:3000/chat/' + questionId;
+  const invite = (
+    <div>
+      <Paragraph copyable>{link} </Paragraph>
+    </div>
+  );
 
   const onLoadMore = () => {
     const params = {
-      question_id: 1,
+      questionId: 1,
       page: 1,
       sort: 1,
     };
@@ -27,22 +33,27 @@ const EvaluatePage = () => {
 
   // 获取评价
   useEffect(() => {
-    dispatch(fetchEvaluate(answer_id));
+    dispatch(fetchEvaluate(answerId));
   }, []);
 
   return (
     <Row justify={'center'}>
-      <Col xs={24} lg={14} style={{ background: '#fff', padding: '8px 0 24px' }}>
-        <Card bordered={false}>
+      <Col xs={24} lg={14} style={{ background: 'linear-gradient(#ebeff7, #fff)', padding: '8px 0 24px' }}>
+        <Card style={{ backgroundColor: '#eceff5', boxShadow: '5px' }}>
           <Row align={'bottom'} justify={'space-around'}>
             <Col>
-              <Title italic={true} style={{ fontSize: '48px', color: '#e95866' }}>{evaluate.answer_score}</Title>
+              <Title italic={true} style={{ fontSize: '48px', color: '#e95866' }}>{evaluate.answerScore}</Title>
             </Col>
             <Col span={20}>
-              <div>{evaluate.answer_ai_result}</div>
+              <div>{evaluate.answerAiResult}</div>
             </Col>
           </Row>
-          <Row justify={'end'} style={{ marginTop: '5px' }}><Button type="text" size="large" style={{ fontWeight: 'bold' }}>邀请好友回答</Button></Row>
+          <Row justify={'end'} style={{ marginTop: '5px' }}>
+            {/* <Button type="text" size="large" onClick={invite} style={{ fontWeight: 'bold' }}>邀请好友回答</Button> */}
+            <Popover content={invite} trigger="click">
+              <Button>邀请好友回答</Button>
+            </Popover>
+          </Row>
         </Card>
         <Row style={{ padding: '8px 0 24px' }} justify={'center'}>
           <Col span={22}>
