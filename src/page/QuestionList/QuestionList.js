@@ -5,6 +5,7 @@ import { DislikeOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
 import { http } from '../../api/server';
 import IconText from '../../components/IconText';
 import Sort from '../../components/Sort';
+import '../../css/Card.css';
 
 const sortItems = [
   { label: '综合', key: 'sort' },
@@ -60,15 +61,31 @@ const QuestionList = () => {
 
   return (
     <Row justify={'center'}>
-      <Col xs={24} lg={14} style={{ background: 'linear-gradient(#ebeff7, #fff)' }}>
-        <Card style={{ backgroundColor: '#e2e8f6', boxShadow: 1 }}>
-          <Sort items={sortItems} selectedTag={sort} handleSort={handleSort} />
-          <Sort items={typeItems} selectedTag={type} handleSort={handleType} />
-          <Sort items={levelItems} selectedTag={level} handleSort={handleLevel} />
-        </Card>
+      <Col xs={24} lg={14}>
         <Row justify={'center'}>
-          <Col span={24} >
+          <Col span={22}>
+            <Card className="card">
+              <Sort items={sortItems} selectedTag={sort} handleSort={handleSort} />
+              <Sort items={typeItems} selectedTag={type} handleSort={handleType} />
+              <Sort items={levelItems} selectedTag={level} handleSort={handleLevel} />
+            </Card>
+          </Col>
+        </Row>
+        <Row justify={'center'}>
+          <Col span={22} >
+            {/* <ConfigProvider
+              theme={{
+                components: {
+                  List: {
+                    //  这里是你的组件 token
+                    metaMarginBottom: '80px',
+                  },
+                },
+              }}
+            > */}
             <List
+              // grid={{ column: 1 }}
+              className="question-list"
               dataSource={questionList}
               itemLayout="vertical"
               pagination={{
@@ -84,6 +101,7 @@ const QuestionList = () => {
                     <IconText icon={DislikeOutlined} text={item.unlike} key="list-vertical-like-o" />,
                     <IconText icon={StarOutlined} text={item.favorite} key="list-vertical-message" />,
                   ]}
+                  className="list-item"
                 >
                   <List.Item.Meta
                     title={ <Link to={`/chat/${item.questionId}`}><Typography>{item.questionTitle}</Typography></Link>}
@@ -91,6 +109,7 @@ const QuestionList = () => {
                 </List.Item>
               )}
             />
+            {/* </ConfigProvider> */}
           </Col>
         </Row>
       </Col>

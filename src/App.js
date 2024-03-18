@@ -13,7 +13,7 @@ function App() {
     <Router>
       <Layout>
       <HeaderNav />
-        <Content>
+        <Content style={{ background: 'linear-gradient(#ebeff7, #fff)' }}>
           <Routes>
             <Route path="/" element={<QuestionList />} />
             <Route path="/chat/:questionId" element={<ChatPage />} />

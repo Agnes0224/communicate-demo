@@ -53,22 +53,35 @@ export const answerSlice = createSlice({
       switch (type) {
         case 'like':
           if (answer.isUnLike) {
-            answer.isLike = true;
             answer.isUnLike = false;
+            answer.unLike = answer.unLike - 1;
+            answer.like = answer.like + 1;
+          } else if (answer.isLike) {
+            answer.like = answer.like - 1;
           } else {
-            answer.isLike = !answer.isLike;
+            answer.like = answer.like + 1;
           }
+          answer.isLike = !answer.isLike;
           break;
         case 'unLike':
           if (answer.isLike) {
             answer.isLike = false;
-            answer.isUnLike = true;
+            answer.like = answer.like - 1;
+            answer.unLike = answer.unLike + 1;
+          } else if (answer.isUnLike) {
+            answer.unLike = answer.unLike - 1;
           } else {
-            answer.isUnLike = !answer.isUnLike;
+            answer.unLike = answer.unLike + 1;
           }
+          answer.isUnLike = !answer.isUnLike;
           break;
         case 'favorite':
           answer.isFavorite = !answer.isFavorite;
+          if (answer.isFavorite) {
+            answer.favorite = answer.favorite + 1;
+          } else {
+            answer.favorite = answer.favorite - 1;
+          }
           break;
       }
     },
@@ -78,8 +91,12 @@ export const answerSlice = createSlice({
     .addCase(fetchEvaluate.fulfilled, (state, action) => {
       state.evaluate = action.payload;
     })
+    .addCase(fetchAnswer.pending, (state) => {
+      state.status = 'loading';
+    })
     .addCase(fetchAnswer.fulfilled, (state, action) => {
       state.answers = state.answers.concat(action.payload);
+      state.status = 'succeed';
     });
   },
 });
@@ -90,3 +107,4 @@ export const { handleHighlight } = answerSlice.actions;
 
 export const selectAnswers = (state) => state.answer.answers;
 export const selectEvaluate = (state) => state.answer.evaluate;
+export const selectStatus = (state) => state.answer.status;

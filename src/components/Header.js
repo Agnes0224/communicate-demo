@@ -5,7 +5,7 @@ const { Header } = Layout;
 
 const HeaderNav = () => {
   return (
-    <Header style={{ background: '#fff', padding: 0 }}>
+    <Header style={{ background: '#e2e8f6', padding: 0 }}>
       <Row justify={'space-around'}>
         <Col>
           <Link to="/">首页</Link>

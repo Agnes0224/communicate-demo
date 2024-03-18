@@ -2,7 +2,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { http } from '../../api/server';
 
 const initialState = {
-  question: [],
+  question: {
+    questionId: 1,
+    questionTitle: '加载中',
+    questionContent: '...',
+    questionLevel: 1,
+  },
   answer: [],
   status: 'idle',
 };

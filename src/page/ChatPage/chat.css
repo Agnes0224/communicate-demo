@@ -26,3 +26,13 @@
     padding: 16px 0;
     background: linear-gradient(#ebeff7, #fff);
 }
+
+.send-input {
+    position: relative;
+}
+
+.send-btn {
+    position: absolute;
+    bottom: 0;
+    right: -2em;
+}

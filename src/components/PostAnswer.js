@@ -19,8 +19,8 @@ const PostAnswer = ({ answer }) => {
             }
             actions={[
               <IconText icon={LikeOutlined} text={item.like} hightlight={item.isLike} type={'like'} answerUserId={item.answerUserId} key="like" />,
-              <IconText icon={DislikeOutlined} text={item.unLike} hightlight={item.isUnLike} type={'unLike' } answerUserId={item.answerUserId} key="like" />,
-              <IconText icon={StarOutlined} text={item.favorite} hightlight={item.isFavorite} type={'favorite'} answerUserId={item.answerUserId} key="like" />,
+              <IconText icon={DislikeOutlined} text={item.unLike} hightlight={item.isUnLike} type={'unLike' } answerUserId={item.answerUserId} key="unLike" />,
+              <IconText icon={StarOutlined} text={item.favorite} hightlight={item.isFavorite} type={'favorite'} answerUserId={item.answerUserId} key="favorite" />,
             ]}
           >
             <List.Item.Meta

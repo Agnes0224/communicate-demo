@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Avatar, Button, Col, Input, Modal, Row, Typography } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, SendOutlined } from '@ant-design/icons';
 import { addMsg, cleanMsg, selectQuestion, selectAnswer, fetchQuestion, fetchAnswer } from './ChatSlice';
 import { useSelector, useDispatch } from 'react-redux';
 // import IconText from '../../components/IconText';
@@ -46,12 +46,15 @@ const ChatPage = () => {
 
   useEffect(() => {
     dispatch(cleanMsg());
-    dispatch(fetchQuestion(questionId));
+    const timer = setTimeout(() => {
+      dispatch(fetchQuestion(questionId));
+    }, 3000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
     <Row justify={'center'}>
-      <Col xs={24} lg={14} style={{ background: '#fff', padding: '8px 0 24px' }}>
+      <Col xs={24} lg={14}>
         <Row justify={'center'} className="chatBox">
           <Col span={22}>
             {/* {chat.map((item) => {
@@ -82,12 +85,24 @@ const ChatPage = () => {
             }
           </Col>
         </Row>
-        <Row gutter={32} justify={'center'} align={'bottom'}>
-          <Col xs={16} sm={18} lg={20}><Input.TextArea rows={3} value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="请输入你的回答" /></Col>
-          <Button type="primary" onClick={sendMsg}>Submit</Button>
+        <Row gutter={32} className="send">
+          <Col offset={2} xs={18} sm={20} lg={22}>
+            <Input.TextArea
+              className="send-input"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="请输入你的回答"
+            />
+            <Button
+              icon={<SendOutlined />}
+              className="send-btn"
+              onClick={sendMsg}
+              type="primary"
+            />
+          </Col>
           <Modal open={isOpen} onOk={changeEvaluate} onCancel={handleCancel} >
             <Typography>你已完成对话练习，请对本问题做出评价</Typography>
-            {/* <IconText icon={LikeOutlined} hightlight={qusetion.isLike} type={'like'} answerUserId={qusetion.answerUserId} key="like" />,
+            {/* <IconText icon={LikeOutlined} hightlight={qusetion.isLike} type={'like'} answerUserId={qusetion.answerUserId} key="like" text={''} />,
             <IconText icon={DislikeOutlined} hightlight={qusetion.isUnLike} type={'unLike' } answerUserId={qusetion.answerUserId} key="like" />,
             <IconText icon={StarOutlined} hightlight={qusetion.isFavorite} type={'favorite'} answerUserId={qusetion.answerUserId} key="like" /> */}
           </Modal>
