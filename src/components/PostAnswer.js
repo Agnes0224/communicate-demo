@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import { Avatar, List, Typography } from 'antd';
-import { DislikeOutlined, LikeOutlined, StarOutlined, UserOutlined } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import IconText from './IconText';
 
 const { Title } = Typography;
@@ -18,9 +18,9 @@ const PostAnswer = ({ answer }) => {
               <Title style={{ color: '#e95866' }}>{item.answerScore}</Title>
             }
             actions={[
-              <IconText icon={LikeOutlined} text={item.like} hightlight={item.isLike} type={'like'} answerUserId={item.answerUserId} key="like" />,
-              <IconText icon={DislikeOutlined} text={item.unLike} hightlight={item.isUnLike} type={'unLike' } answerUserId={item.answerUserId} key="unLike" />,
-              <IconText icon={StarOutlined} text={item.favorite} hightlight={item.isFavorite} type={'favorite'} answerUserId={item.answerUserId} key="favorite" />,
+              <IconText type="like" actionAim={1} actionAimId={item.answerId} key="like" />,
+              <IconText type="unLike" actionAim={1} actionAimId={item.answerId} key="unLike" />,
+              <IconText type="favorite" actionAim={1} actionAimId={item.answerId} key="favorite" />,
             ]}
           >
             <List.Item.Meta

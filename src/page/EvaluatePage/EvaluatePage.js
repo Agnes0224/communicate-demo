@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Row, Skeleton, Typography, Popover } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectAnswers, selectEvaluate, fetchEvaluate, fetchAnswer, selectStatus } from './AnswerSlice';
+import { selectAnswers, selectEvaluate, fetchEvaluate, fetchAnswer, selectStatus, selectCount } from './AnswerSlice';
 import PostAnswer from '../../components/PostAnswer';
 import { useParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -17,13 +17,15 @@ const EvaluatePage = () => {
   const loading = useSelector(selectStatus);
   // 获取ai评分
   const evaluate = useSelector(selectEvaluate);
+  // 获取回答数目
+  const count = useSelector(selectCount);
   // 设置按钮隐藏
   const [isButtonOpen, setIsButtonOpen] = useState(true);
   // 获取当前页码
   const [page, setPage] = useState(1);
 
   const answerId = 1;
-  const link = 'http://localhost:3000/chat/' + questionId;
+  const link = 'http://ai.sciclubs.com/chat/' + questionId;
 
   // 邀请好友回答
   const invite = (
@@ -49,6 +51,7 @@ const EvaluatePage = () => {
       questionId: questionId,
       page: page,
       sort: 1,
+      pageSize: 10,
     };
     dispatch(fetchAnswer(params));
     setPage(page + 1);
@@ -85,7 +88,7 @@ const EvaluatePage = () => {
           <Col span={22}>
             <InfiniteScroll
               next={loadMore}
-              hasMore={answer.length < 50}
+              hasMore={answer.length < count + 2}
               dataLength={answer.length}
               loader={ !isButtonOpen && (
                 <Skeleton

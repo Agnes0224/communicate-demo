@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, Col, List, Row, Typography } from 'antd';
-import { DislikeOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
-import { http } from '../../api/server';
+// import { DislikeOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
+// import { http } from '../../api/server';
 import IconText from '../../components/IconText';
 import Sort from '../../components/Sort';
 import '../../css/Card.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchQuestion, selectQuestions } from './QuestionSlice';
 
 const sortItems = [
   { label: '综合', key: 'sort' },
@@ -30,10 +32,14 @@ const levelItems = [
 ];
 
 const QuestionList = () => {
-  const [sort, setSort] = useState('sort');
+  const [sort, setSort] = useState(1);
   const [type, setType] = useState('type');
-  const [level, setLevel] = useState('level');
-  const [questionList, setQuestionList] = useState([]);
+  const [level, setLevel] = useState(1);
+  // const [questionList, setQuestionList] = useState([]);
+
+  const questions = useSelector(selectQuestions);
+  console.log(questions);
+  const dispatch = useDispatch();
 
   const handleSort = e => {
     setSort(e.key);
@@ -49,14 +55,11 @@ const QuestionList = () => {
     const params = {
       page: 1,
       sort: sort,
-      type: type,
+      // type: type,
       level: level,
+      pageSize: 3,
     };
-    const getQuestionList = async(params) => {
-      const response = await http.get('/training/question/list', params);
-      setQuestionList(response.data.data.data);
-    };
-    getQuestionList(params);
+    dispatch(fetchQuestion(params));
   }, [sort, type, level]);
 
   return (
@@ -86,7 +89,7 @@ const QuestionList = () => {
             <List
               // grid={{ column: 1 }}
               className="question-list"
-              dataSource={questionList}
+              dataSource={questions}
               itemLayout="vertical"
               pagination={{
                 pageSize: 5,
@@ -97,9 +100,9 @@ const QuestionList = () => {
               renderItem={item => (
                 <List.Item
                   actions={[
-                    <IconText icon={LikeOutlined} text={item.like} key="list-vertical-star-o" />,
-                    <IconText icon={DislikeOutlined} text={item.unlike} key="list-vertical-like-o" />,
-                    <IconText icon={StarOutlined} text={item.favorite} key="list-vertical-message" />,
+                    <IconText type="like" actionAim={0} actionAimId={item.questionId} key="like" />,
+                    <IconText type="unLike" actionAim={0} actionAimId={item.questionId} key="unLike" />,
+                    <IconText type="favorite" actionAim={0} actionAimId={item.questionId} key="favorite" />,
                   ]}
                   className="list-item"
                 >

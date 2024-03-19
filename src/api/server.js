@@ -1,5 +1,5 @@
 import axios from 'axios';
-const root = 'http://127.0.0.1:4523/m1/4159816-0-default';
+const root = '/api/public';
 
 const all = async function() {
   const funcs = [...arguments];

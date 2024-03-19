@@ -6,33 +6,37 @@ const initialState = {
   answers: [
     {
       answerUserId: 1,
+      answerId: 1,
       userName: 'user1',
       answerContent: '回答balabala',
       like: 231,
       unLike: 21,
       favorite: 3411,
       answerScore: 100,
+      likeState: 2,
+      favoriteState: 0,
     },
     {
       answerUserId: 2,
+      answerId: 2,
       userName: 'user2',
       answerContent: '回答balabala回答balabala',
       like: 231,
       unLike: 12,
       favorite: 121,
-      isLike: 1,
-      isUnLike: 0,
-      isFavorite: 1,
+      likeState: 5,
+      favoriteState: 1,
       answerScore: 91,
     },
   ],
+  count: '',
   evaluate: [],
   status: 'idle',
 };
 
 // 获取评价
-export const fetchEvaluate = createAsyncThunk('evaluate/fetchEvaluate', async(answer_id) => {
-  const response = await http.get('/training/answer/ai', { answer_id });
+export const fetchEvaluate = createAsyncThunk('evaluate/fetchEvaluate', async(answerId) => {
+  const response = await http.get('/training/answer/ai', { answerId });
   return response.data.data;
 });
 
@@ -40,49 +44,46 @@ export const fetchEvaluate = createAsyncThunk('evaluate/fetchEvaluate', async(an
 export const fetchAnswer = createAsyncThunk('answer/fetchAnswer', async(params) => {
   const response = await http.get('/training/answer/getQuestionAnswers', params);
   // console.log(response);
-  return response.data.data.data;
+  return response.data.data;
 });
 
 export const answerSlice = createSlice({
   name: 'answer',
   initialState,
   reducers: {
-    handleHighlight(state, action) {
-      const { answerUserId, type } = action.payload;
-      const answer = state.answers.find(answer => answer.answerUserId === answerUserId);
-      switch (type) {
-        case 'like':
-          if (answer.isUnLike) {
-            answer.isUnLike = false;
+    handleAnswerAction(state, action) {
+      const { actionType, actionAimId, type } = action.payload;
+      const answer = state.answers.find(answer => answer.answerId === actionAimId);
+      switch (actionType) {
+        case 0:
+          answer.favoriteState = 0;
+          answer.favorite = answer.favorite + 1;
+          break;
+        case 1:
+          answer.favoriteState = 1;
+          answer.favorite = answer.favorite - 1;
+          break;
+        case 2:
+          answer.like = answer.like + 1;
+          if (answer.likeState === 5) {
             answer.unLike = answer.unLike - 1;
-            answer.like = answer.like + 1;
-          } else if (answer.isLike) {
+          }
+          answer.likeState = 2;
+          break;
+        case 3:
+          answer.likeState = 3;
+          if (type === 'like') {
             answer.like = answer.like - 1;
           } else {
-            answer.like = answer.like + 1;
-          }
-          answer.isLike = !answer.isLike;
-          break;
-        case 'unLike':
-          if (answer.isLike) {
-            answer.isLike = false;
-            answer.like = answer.like - 1;
-            answer.unLike = answer.unLike + 1;
-          } else if (answer.isUnLike) {
             answer.unLike = answer.unLike - 1;
-          } else {
-            answer.unLike = answer.unLike + 1;
-          }
-          answer.isUnLike = !answer.isUnLike;
-          break;
-        case 'favorite':
-          answer.isFavorite = !answer.isFavorite;
-          if (answer.isFavorite) {
-            answer.favorite = answer.favorite + 1;
-          } else {
-            answer.favorite = answer.favorite - 1;
           }
           break;
+        case 5:
+          answer.unLike = answer.unLike + 1;
+          if (answer.likeState === 2) {
+            answer.like = answer.like - 1;
+          }
+          answer.likeState = 5;
       }
     },
   },
@@ -95,7 +96,8 @@ export const answerSlice = createSlice({
       state.status = 'loading';
     })
     .addCase(fetchAnswer.fulfilled, (state, action) => {
-      state.answers = state.answers.concat(action.payload);
+      state.answers = state.answers.concat(action.payload.data);
+      state.count = action.payload.count;
       state.status = 'succeed';
     });
   },
@@ -103,8 +105,10 @@ export const answerSlice = createSlice({
 
 export default answerSlice.reducer;
 
-export const { handleHighlight } = answerSlice.actions;
+export const { handleAnswerAction } = answerSlice.actions;
 
 export const selectAnswers = (state) => state.answer.answers;
 export const selectEvaluate = (state) => state.answer.evaluate;
 export const selectStatus = (state) => state.answer.status;
+export const selectCount = (state) => state.answer.count;
+export const selectAnswerById = (state, answerId) => state.answer.answers.find(answer => answer.answerId === answerId);

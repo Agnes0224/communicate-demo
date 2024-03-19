@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Avatar, Button, Col, Input, Modal, Row, Typography } from 'antd';
+import { Avatar, Button, Col, Input, Row } from 'antd';
 import { UserOutlined, SendOutlined } from '@ant-design/icons';
 import { addMsg, cleanMsg, selectQuestion, selectAnswer, fetchQuestion, fetchAnswer } from './ChatSlice';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,7 +12,7 @@ import './chat.css';
 const ChatPage = () => {
   const [inputValue, setInputValue] = useState([]);
   // 设置对话框弹出
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { questionId } = useParams();
@@ -31,24 +31,24 @@ const ChatPage = () => {
     dispatch(fetchAnswer(newAnswer));
     dispatch(addMsg(newAnswer));
     setInputValue('');
-    setIsOpen(true);
-  };
-
-  // 跳转评价页面
-  const changeEvaluate = () => {
-    setIsOpen(false);
     navigate(`/evaluate/${questionId}`);
   };
 
-  const handleCancel = () => {
-    setIsOpen(false);
-  };
+  // // 跳转评价页面
+  // const changeEvaluate = () => {
+  //   setIsOpen(false);
+  //   navigate(`/evaluate/${questionId}`);
+  // };
+
+  // const handleCancel = () => {
+  //   setIsOpen(false);
+  // };
 
   useEffect(() => {
     dispatch(cleanMsg());
     const timer = setTimeout(() => {
       dispatch(fetchQuestion(questionId));
-    }, 3000);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -100,12 +100,6 @@ const ChatPage = () => {
               type="primary"
             />
           </Col>
-          <Modal open={isOpen} onOk={changeEvaluate} onCancel={handleCancel} >
-            <Typography>你已完成对话练习，请对本问题做出评价</Typography>
-            {/* <IconText icon={LikeOutlined} hightlight={qusetion.isLike} type={'like'} answerUserId={qusetion.answerUserId} key="like" text={''} />,
-            <IconText icon={DislikeOutlined} hightlight={qusetion.isUnLike} type={'unLike' } answerUserId={qusetion.answerUserId} key="like" />,
-            <IconText icon={StarOutlined} hightlight={qusetion.isFavorite} type={'favorite'} answerUserId={qusetion.answerUserId} key="like" /> */}
-          </Modal>
         </Row>
       </Col>
     </Row>

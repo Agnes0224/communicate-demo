@@ -52,9 +52,3 @@ export default chatSlice.reducer;
 export const selectQuestion = (state) => state.chat.question;
 export const selectAnswer = (state) => state.chat.answer;
 
-// export const selectMsg = (state) => {
-//   const question = selectQuestion(state);
-//   const answer = selectAnswer(state);
-//   return [...question, ...answer];
-// };
-
