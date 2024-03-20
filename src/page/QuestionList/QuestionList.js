@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, Col, List, Row, Typography } from 'antd';
-// import { DislikeOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
-// import { http } from '../../api/server';
 import IconText from '../../components/IconText';
 import Sort from '../../components/Sort';
 import '../../css/Card.css';
@@ -35,10 +33,8 @@ const QuestionList = () => {
   const [sort, setSort] = useState(1);
   const [type, setType] = useState('type');
   const [level, setLevel] = useState(1);
-  // const [questionList, setQuestionList] = useState([]);
 
   const questions = useSelector(selectQuestions);
-  console.log(questions);
   const dispatch = useDispatch();
 
   const handleSort = e => {
@@ -76,18 +72,7 @@ const QuestionList = () => {
         </Row>
         <Row justify={'center'}>
           <Col span={22} >
-            {/* <ConfigProvider
-              theme={{
-                components: {
-                  List: {
-                    //  这里是你的组件 token
-                    metaMarginBottom: '80px',
-                  },
-                },
-              }}
-            > */}
             <List
-              // grid={{ column: 1 }}
               className="question-list"
               dataSource={questions}
               itemLayout="vertical"
@@ -100,9 +85,7 @@ const QuestionList = () => {
               renderItem={item => (
                 <List.Item
                   actions={[
-                    <IconText type="like" actionAim={0} actionAimId={item.questionId} key="like" />,
-                    <IconText type="unLike" actionAim={0} actionAimId={item.questionId} key="unLike" />,
-                    <IconText type="favorite" actionAim={0} actionAimId={item.questionId} key="favorite" />,
+                    <IconText item={item} key="icon" />,
                   ]}
                   className="list-item"
                 >
@@ -112,7 +95,6 @@ const QuestionList = () => {
                 </List.Item>
               )}
             />
-            {/* </ConfigProvider> */}
           </Col>
         </Row>
       </Col>

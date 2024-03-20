@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Row, Skeleton, Typography, Popover } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectAnswers, selectEvaluate, fetchEvaluate, fetchAnswer, selectStatus, selectCount } from './AnswerSlice';
+import { selectAnswers, selectEvaluate, fetchEvaluate, fetchAnswer, selectStatus, selectCount, fetchBestAnswer } from './AnswerSlice';
 import PostAnswer from '../../components/PostAnswer';
 import { useParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -60,6 +60,7 @@ const EvaluatePage = () => {
   // 获取评价
   useEffect(() => {
     dispatch(fetchEvaluate(answerId));
+    dispatch(fetchBestAnswer(questionId));
   }, []);
 
   return (

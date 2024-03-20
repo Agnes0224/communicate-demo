@@ -1,135 +1,104 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from 'react';
-import { Button, Space } from 'antd';
+import React from 'react';
+import { Button, Col, Row, Space } from 'antd';
 import { DislikeOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
-
-import { handleAnswerAction, selectAnswerById } from '../page/EvaluatePage/AnswerSlice';
-import { useDispatch, useSelector } from 'react-redux';
 import { http } from '../api/server';
-import { handleQuestionAction, selectQuestionById } from '../page/QuestionList/QuestionSlice';
+import { handleQuestionAction } from '../page/QuestionList/QuestionSlice';
+import { handleAnswerAction } from '../page/EvaluatePage/AnswerSlice';
+import { useDispatch } from 'react-redux';
+// import { http } from '../api/server';
+// import { handleQuestionAction } from '../page/QuestionList/QuestionSlice';
 
-const IconText = ({ type, actionAim, actionAimId }) => {
+const IconText = ({ item }) => {
   const dispatch = useDispatch();
-  const [action, setAction] = useState({ type, actionAim, actionAimId });
-  // const [answer, setanswer] = useState();
-  const [icon, setIcon] = useState();
-  const answer = useSelector(state => selectAnswerById(state, action.actionAimId));
-  const question = useSelector(state => selectQuestionById(state, action.actionAimId));
-  // console.log(action);
-  console.log(question);
 
-  const handleActionType = () => {
-    if (action.actionAim === 0) {
-      // question
-      switch (action.type) {
-        case 'favorite':
-          setIcon(StarOutlined);
-          if (question?.favoriteState === 0) {
-          // 已收藏
-            setAction({ ...action, actionType: 1, hightlight: true, text: question?.favorite });
-          } else {
-          // 未收藏
-            setAction({ ...action, actionType: 0, hightlight: false, text: question?.favorite });
-          }
-          break;
-        case 'like':
-          setIcon(LikeOutlined);
-          if (question?.likeState === 2) {
-          // 已点赞
-            setAction({ ...action, actionType: 3, hightlight: true, text: question?.like });
-          } else {
-          // 未点赞
-            setAction({ ...action, actionType: 2, hightlight: false, text: question?.like });
-          }
-          break;
-        case 'unLike':
-          setIcon(DislikeOutlined);
-          if (question?.likeState === 5) {
-          // 已点踩
-            setAction({ ...action, actionType: 3, hightlight: true, text: question?.unLike });
-          } else {
-          // 未点踩
-            setAction({ ...action, actionType: 5, hightlight: false, text: question?.unLike });
-          }
-          break;
-      }
-    } else {
-      // answer
-      switch (action.type) {
-        case 'favorite':
-          setIcon(StarOutlined);
-          if (answer.favoriteState === 0) {
-          // 已收藏
-            setAction({ ...action, actionType: 1, hightlight: true, text: answer.favorite });
-          } else {
-          // 未收藏
-            setAction({ ...action, actionType: 0, hightlight: false, text: answer.favorite });
-          }
-          break;
-        case 'like':
-          setIcon(LikeOutlined);
-          if (answer.likeState === 2) {
-          // 已点赞
-            setAction({ ...action, actionType: 3, hightlight: true, text: answer.like });
-          } else {
-          // 未点赞
-            setAction({ ...action, actionType: 2, hightlight: false, text: answer.like });
-          }
-          break;
-        case 'unLike':
-          setIcon(DislikeOutlined);
-          if (answer.likeState === 5) {
-          // 已点踩
-            setAction({ ...action, actionType: 3, hightlight: true, text: answer.unLike });
-          } else {
-          // 未点踩
-            setAction({ ...action, actionType: 5, hightlight: false, text: answer.unLike });
-          }
-          break;
-      }
-    }
-  };
-
-  const submitAction = async() => {
-    const params = {
-      actionType: action.actionType,
-      actionAim: actionAim,
-      actionAimId: actionAimId,
-    };
-    await http.post('/training/action/saveAction', params);
-  };
-
-  const handleClick = () => {
-    switch (actionAim) {
-      case 0:
-        dispatch(handleQuestionAction(action));
+  const getParams = (type) => {
+    const baseParams = { actionAim: item.questionId ? 0 : 1, actionAimId: item.questionId || item.answerId };
+    let actionType;
+    switch (type) {
+      case 'favorite':
+        actionType = item.favoriteState ? 0 : 1;
         break;
-      case 1:
-        dispatch(handleAnswerAction(action));
+      case 'like':
+        if (item?.likeState === 2) {
+          actionType = 3;
+        } else {
+          actionType = 2;
+        }
+        break;
+      case 'unLike':
+        if (item?.likeState === 5) {
+          actionType = 3;
+        } else {
+          actionType = 5;
+        }
         break;
       default:
         break;
     }
-    submitAction();
+    return { ...baseParams, actionType };
   };
 
-  useEffect(() => {
-    handleActionType();
-  }, [answer, question]);
+  const submitAction = async(type) => {
+    const params = getParams(type);
+    await http.post('/training/action/saveAction', params);
+    switch (params.actionAim) {
+      case 0:
+        dispatch(handleQuestionAction(params));
+        break;
+      case 1:
+        dispatch(handleAnswerAction(params));
+        break;
+    }
+  };
+
+  const handleClick = (type) => {
+    submitAction(type);
+  };
 
   return (
-    <Space>
-      {icon && (
-        <Button
-          type="text"
-          icon={React.createElement(icon)}
-          key={action.type}
-          onClick={handleClick}
-          style={{ color: action.hightlight ? 'blue' : '' }}
-        />
+    <Row gutter={16}>
+      {(item.questionId || item.answerId) && (
+        <>
+          <Col>
+            <Space>
+              <Button
+                type="text"
+                icon={<LikeOutlined />}
+                key="like"
+                onClick={() => handleClick('like')}
+                style={{ color: item.likeState === 2 ? 'blue' : '' }}
+              />
+              {item.like}
+            </Space>
+          </Col>
+          <Col>
+            <Space>
+              <Button
+                type="text"
+                icon={<DislikeOutlined />}
+                key="unLike"
+                onClick={() => handleClick('unLike')}
+                style={{ color: item.likeState === 5 ? 'blue' : '' }}
+              />
+              {item.unLike}
+            </Space>
+          </Col>
+          <Col>
+            <Space>
+              <Button
+                type="text"
+                icon={<StarOutlined />}
+                key="favorite"
+                onClick={() => handleClick('favorite')}
+                style={{ color: item.favoriteState ? '' : 'blue' }}
+              />
+              {item.favorite}
+            </Space>
+          </Col>
+        </>
       )}
-      {action.text}
-    </Space>
+    </Row>
   );
 };
 

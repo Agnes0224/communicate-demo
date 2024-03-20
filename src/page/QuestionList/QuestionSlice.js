@@ -10,7 +10,6 @@ const initialState = {
 // 获取问题
 export const fetchQuestion = createAsyncThunk('question/fetchquestion', async(params) => {
   const response = await http.get('/training/question/list', params);
-  // console.log(response);
   return response.data.data.data;
 });
 
@@ -19,7 +18,7 @@ export const questionSlice = createSlice({
   initialState,
   reducers: {
     handleQuestionAction(state, action) {
-      const { actionType, actionAimId, type } = action.payload;
+      const { actionType, actionAimId } = action.payload;
       const question = state.questions.find(question => question.questionId === actionAimId);
       switch (actionType) {
         case 0:
@@ -38,12 +37,12 @@ export const questionSlice = createSlice({
           question.likeState = 2;
           break;
         case 3:
-          question.likeState = 3;
-          if (type === 'like') {
+          if (question.likeState === 2) {
             question.like = question.like - 1;
           } else {
             question.unLike = question.unLike - 1;
           }
+          question.likeState = 3;
           break;
         case 5:
           question.unLike = question.unLike + 1;
@@ -71,4 +70,3 @@ export default questionSlice.reducer;
 export const { handleQuestionAction } = questionSlice.actions;
 
 export const selectQuestions = (state) => state.question.questions;
-export const selectQuestionById = (state, questionId) => state.question.questions.find(question => question.questionId === questionId);

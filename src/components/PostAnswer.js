@@ -18,9 +18,7 @@ const PostAnswer = ({ answer }) => {
               <Title style={{ color: '#e95866' }}>{item.answerScore}</Title>
             }
             actions={[
-              <IconText type="like" actionAim={1} actionAimId={item.answerId} key="like" />,
-              <IconText type="unLike" actionAim={1} actionAimId={item.answerId} key="unLike" />,
-              <IconText type="favorite" actionAim={1} actionAimId={item.answerId} key="favorite" />,
+              <IconText item={item} key="icon" />,
             ]}
           >
             <List.Item.Meta
