@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, Col, List, Row, Typography } from 'antd';
-import IconText from '../../components/IconText';
-import Sort from '../../components/Sort';
-import '../../css/Card.css';
+import { Card, Col, Row } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchQuestion, selectQuestions } from './QuestionSlice';
+import PostQuestion from '../../components/PostQuestion';
+import Sort from '../../components/Sort';
+import '../../css/Card.css';
 
 const sortItems = [
   { label: '综合', key: 'sort' },
@@ -53,50 +52,20 @@ const QuestionList = () => {
       sort: sort,
       // type: type,
       level: level,
-      pageSize: 3,
+      pageSize: 10,
     };
     dispatch(fetchQuestion(params));
   }, [sort, type, level]);
 
   return (
     <Row justify={'center'}>
-      <Col xs={24} lg={14}>
-        <Row justify={'center'}>
-          <Col span={22}>
-            <Card className="card">
-              <Sort items={sortItems} selectedTag={sort} handleSort={handleSort} />
-              <Sort items={typeItems} selectedTag={type} handleSort={handleType} />
-              <Sort items={levelItems} selectedTag={level} handleSort={handleLevel} />
-            </Card>
-          </Col>
-        </Row>
-        <Row justify={'center'}>
-          <Col span={22} >
-            <List
-              className="question-list"
-              dataSource={questions}
-              itemLayout="vertical"
-              pagination={{
-                pageSize: 5,
-              }}
-              bordered="true"
-              split="false"
-              style={{ background: '#fff', marginTop: '1rem' }}
-              renderItem={item => (
-                <List.Item
-                  actions={[
-                    <IconText item={item} key="icon" />,
-                  ]}
-                  className="list-item"
-                >
-                  <List.Item.Meta
-                    title={ <Link to={`/chat/${item.questionId}`}><Typography>{item.questionTitle}</Typography></Link>}
-                  />
-                </List.Item>
-              )}
-            />
-          </Col>
-        </Row>
+      <Col xs={22} lg={14}>
+        <Card className="card">
+          <Sort items={sortItems} selectedTag={sort} handleSort={handleSort} />
+          <Sort items={typeItems} selectedTag={type} handleSort={handleType} />
+          <Sort items={levelItems} selectedTag={level} handleSort={handleLevel} />
+        </Card>
+        <PostQuestion questions={questions} />
       </Col>
     </Row>
   );

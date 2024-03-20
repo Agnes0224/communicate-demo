@@ -10,6 +10,9 @@ const HeaderNav = () => {
         <Col>
           <Link to="/">首页</Link>
         </Col>
+        <Col>
+          <Link to="/user">个人中心</Link>
+        </Col>
         {/* <Col>
           <Link to="/evaluate">评估页面</Link>
         </Col>

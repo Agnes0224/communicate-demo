@@ -5,20 +5,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectUsers, fetchUsers } from './UserSlice';
 import Sort from '../../components/Sort';
 
-// const tags = [
-//   {
-//     key: 'answer',
-//     value: '回答最多',
-//   },
-//   {
-//     key: 'like',
-//     value: '点赞最多',
-//   },
-//   {
-//     key: 'star',
-//     value: '收藏最多',
-//   },
-// ];
 const sort = [
   { label: '最多回答', key: 0 },
   { label: '最多点赞', key: 1 },

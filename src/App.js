@@ -7,6 +7,7 @@ import ChatPage from './page/ChatPage/ChatPage';
 import EvaluatePage from './page/EvaluatePage/EvaluatePage';
 import RankingList from './page/RankingList/RankingList';
 import QuestionList from './page/QuestionList/QuestionList';
+import UserPage from './page/UserPage/UserPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/chat/:questionId" element={<ChatPage />} />
             <Route path="/evaluate/:questionId" element={<EvaluatePage />} />
             <Route path="/rank" element={<RankingList />} />
+            <Route path="/user" element={<UserPage />} />
           </Routes>
         </Content>
       </Layout>
