@@ -1,114 +1,119 @@
-import React, { useState } from 'react';
-import { Card, Collapse, Col, Row } from 'antd';
+/* eslint-disable react/prop-types */
+import React, { useEffect, useState } from 'react';
+import { Card, Collapse, Col, Row, Tag, Typography, Pagination, Button } from 'antd';
 import PostQuestion from '../../components/PostQuestion';
 import PostAnswer from '../../components/PostAnswer';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUserFavoriteQuestion, fetchUserQuestion, selectQuestions } from '../../redux/QuestionSlice';
+// import { selectAnswers } from '../EvaluatePage/AnswerSlice';
+import './user.css';
+import { fetchUserFavorite, fetchUserLike, selectAnswers, selectUserQuestions } from '../../redux/AnswerSlice';
+import { Link } from 'react-router-dom';
+const { Title } = Typography;
 
 const QAtype = [
-  { label: 'Question', key: 'question' },
-  { label: 'Answer', key: 'answer' },
+  { label: 'Question', key: 0 },
+  { label: 'Answer', key: 1 },
 ];
 
-const questions = [
-  {
-    questionId: 2,
-    questionTitle: '这是问题2',
-    questionType: '测试',
-    questionLevel: 1,
-    questionCreateTime: '2024-03-16 17:28:37',
-    like: 3,
-    unLike: 0,
-    favorite: 0,
-    share: 0,
-    answerCount: 1,
-    likeState: 3,
-    favoriteState: 1,
-  },
-  {
-    questionId: 3,
-    questionTitle: '这是问题3',
-    questionType: '测试',
-    questionLevel: 1,
-    questionCreateTime: '2024-03-16 17:28:37',
-    like: 3,
-    unLike: 0,
-    favorite: 0,
-    share: 0,
-    answerCount: 1,
-    likeState: 2,
-    favoriteState: 1,
-  },
-];
+const Mys = ({ currentType }) => {
+  const [aim, setAim] = useState(0);
+  const [page, setPage] = useState(1);
 
-const answers = [
-  {
-    answerId: 1,
-    answerQuestionId: 1,
-    answerUserId: 1,
-    answerContent: '这是回答的内容',
-    answerScore: 60,
-    answerCreateTime: '2024-03-16 18:12:06',
-    like: 5,
-    unLike: 0,
-    favorite: 0,
-    likeState: 3,
-    favoriteState: 1,
-  },
-  {
-    answerId: 1,
-    answerQuestionId: 1,
-    answerUserId: 1,
-    answerContent: '这是回答的内容',
-    answerScore: 60,
-    answerCreateTime: '2024-03-16 18:12:06',
-    like: 5,
-    unLike: 0,
-    favorite: 0,
-    likeState: 3,
-    favoriteState: 1,
-  },
-];
+  const userQuestions = useSelector(selectUserQuestions);
+  const answers = useSelector(selectAnswers);
 
-const items = [
-  {
-    key: '1',
-    label: '这是问题1',
-    children: <PostAnswer answer={answers} />,
-  },
-  {
-    key: '2',
-    label: '这是问题2',
-    children: <PostAnswer answer={answers} />,
-  },
-];
+  const questions = useSelector(selectQuestions);
+  // const answer = useSelector(selectAnswers);
 
-const Mys = () => {
-  const [type, setTyoe] = useState('question');
+  const dispatch = useDispatch();
+
+  // 设置answer
+  const items = userQuestions.map((item) => {
+    const answer = answers.filter(answer => answer.answerQuestionId === item.question.questionId);
+    const types = item.question.questionType.split(',');
+    return {
+      key: item.question.questionId,
+      label:
+      <>
+        <Title level={5} style={{ margin: '1em 0' }}>{item.question.questionTitle}</Title>
+        <Row justify={'space-between'}>
+          <Col>
+            {types.map((type, index) => (
+              <Tag color="green" style={{ fontSize: '10px', marginRight: '5px' }} key={index}>{type}</Tag>
+            ))}
+          </Col>
+          <Col><Link to={`/chat/${item.question.questionId}`}><Button >再次回答</Button></Link></Col>
+        </Row>
+      </>,
+      children: <PostAnswer answer={answer} />,
+      showArrow: false,
+    };
+  });
 
   // 设置问题or答案
   const onChangeQA = (key) => {
-    setTyoe(key);
+    setAim(key);
   };
 
-  // 设置折叠问题
-  const onChangeQuestion = (key) => {
-    console.log(key);
+  const onChangePage = (value) => {
+    console.log(value);
+    setPage(value);
   };
+
+  useEffect(() => {
+    setAim(0);
+  }, [currentType]);
+
+  useEffect(() => {
+    switch (aim) {
+      case 0:
+        if (currentType === '0') {
+          // favorite
+          const params = { page: page, aim: aim };
+          console.log('favorite');
+          dispatch(fetchUserFavoriteQuestion(params));
+        } else {
+          const params = { page: page, aim: aim, type: currentType };
+          dispatch(fetchUserQuestion(params));
+        }
+        break;
+      case 1:
+        console.log(currentType);
+        if (currentType === '0') {
+          // favorite
+          const params = { page: page, aim: aim };
+          console.log('favorite');
+          dispatch(fetchUserFavorite(params));
+        } else {
+          const params = { page: page, aim: aim, type: currentType };
+          console.log(params);
+          dispatch(fetchUserLike(params));
+        }
+        break;
+    }
+  }, [currentType, aim]);
 
   const contentList = {
-    question:
+    0:
+    // question
         <Col span={24}>
           <PostQuestion questions={questions} />
         </Col>,
-    answer:
-        <Col span={24}>
-          <Collapse size="large" ghost onChange={onChangeQuestion} items={items} expandIconPosition="end" collapsible="icon" />
-        </Col>,
+    1:
+    // answer
+    <>
+      <Col span={24}>
+        <Collapse size="large" bordered={false} items={items} className="question-list" />
+      </Col>
+      <Pagination current={page} onChange={onChangePage} style={{ marginBottom: '' }} />
+    </>,
   };
 
   return (
-    <Card tabList={QAtype} activeTabKey={type} onTabChange={onChangeQA} styles={{ body: { padding: 0 } }}>
+    <Card tabList={QAtype} activeTabKey={aim} onTabChange={onChangeQA} styles={{ body: { padding: 0 } }}>
       <Row justify={'center'}>
-        {contentList[type]}
+        {contentList[aim]}
       </Row>
     </Card>
   );

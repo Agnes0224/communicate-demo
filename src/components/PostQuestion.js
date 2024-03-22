@@ -13,7 +13,7 @@ const PostQuestion = ({ questions }) => {
           dataSource={questions}
           itemLayout="vertical"
           pagination={{
-            pageSize: 5,
+            pageSize: 10,
           }}
           split="false"
           style={{ background: '#fff', marginTop: '1rem', padding: '0 1rem', borderRadius: 15 }}
@@ -26,7 +26,9 @@ const PostQuestion = ({ questions }) => {
             >
               <List.Item.Meta
                 title={ <Link to={`/chat/${item.questionId}`}><Typography>{item.questionTitle}</Typography></Link>}
-                description={<Tag color="green" style={{ fontSize: '10px' }}>{item.questionType}</Tag>}
+                description={item.questionType.split(',').map((type, index) => (
+                  <Tag color="green" style={{ fontSize: '10px', marginRight: '5px' }} key={index}>{type}</Tag>
+                ))}
               />
             </List.Item>
           )}

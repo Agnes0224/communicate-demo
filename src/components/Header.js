@@ -8,8 +8,11 @@ const HeaderNav = () => {
     <Header style={{ background: '#e2e8f6', padding: 0 }}>
       <Row justify={'space-around'}>
         <Col>
-          <Link to="/">首页</Link>
+          <a href="/">首页</a>
         </Col>
+        {/* <Col>
+          <Link to="/">首页</Link>
+        </Col> */}
         <Col>
           <Link to="/user">个人中心</Link>
         </Col>

@@ -1,15 +1,27 @@
 /* eslint-disable camelcase */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { http } from '../../api/server';
+import { http } from '../api/server';
 
 const initialState = {
   questions: [],
   status: 'idle',
 };
 
-// 获取问题
-export const fetchQuestion = createAsyncThunk('question/fetchquestion', async(params) => {
+// 获取首页列表问题
+export const fetchQuestion = createAsyncThunk('question/fetchQuestion', async(params) => {
   const response = await http.get('/training/question/list', params);
+  return response.data.data.data;
+});
+
+// 获取个人中心点赞/点踩问题
+export const fetchUserQuestion = createAsyncThunk('UserQuestion/fetchUserQuestion', async(params) => {
+  const response = await http.get('/training/user/getUserLikeOrNo', params);
+  return response.data.data.data;
+});
+
+// 获取个人中心收藏问题
+export const fetchUserFavoriteQuestion = createAsyncThunk('UserFavoriteQuestion/fetchUserFavoriteQuestion', async(params) => {
+  const response = await http.get('/training/user/getUserFavorites', params);
   return response.data.data.data;
 });
 
@@ -61,6 +73,22 @@ export const questionSlice = createSlice({
     .addCase(fetchQuestion.fulfilled, (state, action) => {
       state.questions = action.payload;
       state.status = 'succeed';
+    })
+    .addCase(fetchUserQuestion.fulfilled, (state, action) => {
+      const questions = [];
+      action.payload.forEach(item => {
+        // questions.push(item.question);
+        questions.push(item.question);
+      });
+      state.questions = questions;
+    })
+    .addCase(fetchUserFavoriteQuestion.fulfilled, (state, action) => {
+      const questions = [];
+      action.payload.forEach(item => {
+        // questions.push(item.question);
+        questions.push(item.question);
+      });
+      state.questions = questions;
     });
   },
 });

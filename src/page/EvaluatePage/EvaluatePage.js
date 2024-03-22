@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Row, Skeleton, Typography, Popover } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectAnswers, selectEvaluate, fetchEvaluate, fetchAnswer, selectStatus, selectCount, fetchBestAnswer } from './AnswerSlice';
+import { selectAnswers, selectEvaluate, fetchEvaluate, fetchAnswer, selectStatus, selectCount, fetchBestAnswer } from '../../redux/AnswerSlice';
 import PostAnswer from '../../components/PostAnswer';
 import { useParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';

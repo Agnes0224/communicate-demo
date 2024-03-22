@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Avatar, Button, Col, Input, Row } from 'antd';
 import { UserOutlined, SendOutlined } from '@ant-design/icons';
-import { addMsg, cleanMsg, selectQuestion, selectAnswer, fetchQuestion, fetchAnswer } from './ChatSlice';
+import { addMsg, cleanMsg, selectQuestion, selectAnswer, fetchChatQuestion, fetchChatAnswer } from './ChatSlice';
 import { useSelector, useDispatch } from 'react-redux';
 // import IconText from '../../components/IconText';
 // import testImg from '../../img/test.png';
@@ -28,7 +28,7 @@ const ChatPage = () => {
       answerUserId: 1,
       answerContent: inputValue,
     };
-    dispatch(fetchAnswer(newAnswer));
+    dispatch(fetchChatAnswer(newAnswer));
     dispatch(addMsg(newAnswer));
     setInputValue('');
     navigate(`/evaluate/${questionId}`);
@@ -47,7 +47,7 @@ const ChatPage = () => {
   useEffect(() => {
     dispatch(cleanMsg());
     const timer = setTimeout(() => {
-      dispatch(fetchQuestion(questionId));
+      dispatch(fetchChatQuestion(questionId));
     }, 1000);
     return () => clearTimeout(timer);
   }, []);

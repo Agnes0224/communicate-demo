@@ -7,6 +7,7 @@ import IconText from './IconText';
 const { Title } = Typography;
 
 const PostAnswer = ({ answer }) => {
+  console.log(answer);
   return (
     <>
       <List
@@ -23,7 +24,7 @@ const PostAnswer = ({ answer }) => {
           >
             <List.Item.Meta
               avatar={<Avatar icon={<UserOutlined />} />}
-              title={item.answerUserId}
+              title={item.answerUserId || '推荐回答'}
               description={<Typography>{item.answerContent}</Typography>}
             />
           </List.Item>

@@ -1,11 +1,12 @@
 /* eslint-disable camelcase */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { http } from '../../api/server';
+import { http } from '../api/server';
 
 const initialState = {
   answers: [],
-  count: '',
   evaluate: [],
+  userQuestions: [],
+  count: '',
   status: 'idle',
 };
 
@@ -28,13 +29,33 @@ export const fetchAnswer = createAsyncThunk('answer/fetchAnswer', async(params) 
   return response.data.data;
 });
 
+// 获取个人空间问题&回答
+export const fetchUserQA = createAsyncThunk('ueserQA/fetchUserQA', async(params) => {
+  const response = await http.get('/training/user/getAnsweredQuestion', params);
+  return response.data.data.data;
+});
+
+// 获取个人中心点赞/点踩问题
+export const fetchUserLike = createAsyncThunk('UserAnswer/fetchUserAnswer', async(params) => {
+  const response = await http.get('/training/user/getUserLikeOrNo', params);
+  return response.data.data.data;
+});
+
+// 获取个人中心收藏问题
+export const fetchUserFavorite = createAsyncThunk('UserFavoriteANswer/fetchUserFavoriteAnswer', async(params) => {
+  const response = await http.get('/training/user/getUserFavorites', params);
+  return response.data.data.data;
+});
+
 export const answerSlice = createSlice({
   name: 'answer',
   initialState,
   reducers: {
     handleAnswerAction(state, action) {
       const { actionType, actionAimId } = action.payload;
+      console.log(action.payload);
       const answer = state.answers.find(answer => answer.answerId === actionAimId);
+      console.log(answer);
       switch (actionType) {
         case 0:
           answer.favoriteState = 0;
@@ -86,13 +107,46 @@ export const answerSlice = createSlice({
       if (action.payload.questionCorrect !== undefined) {
         newElements.push(action.payload.questionCorrect);
       }
-      if (action.payload.maxLikeAnswer !== undefined) {
+      if (action.payload.maxLikeAnswer.answerId) {
         newElements.push(action.payload.maxLikeAnswer);
       }
-      if (action.payload.maxScoreAnswer !== undefined) {
+      if (action.payload.maxScoreAnswer.answerId) {
         newElements.push(action.payload.maxScoreAnswer);
       }
       state.answers = [...newElements];
+    })
+    .addCase(fetchUserQA.fulfilled, (state, action) => {
+      const answers = [];
+      action.payload.forEach(item => {
+        answers.push(...item.answer);
+      });
+      state.answers = answers;
+      state.userQuestions = action.payload;
+    })
+    .addCase(fetchUserLike.fulfilled, (state, action) => {
+      const answers = [];
+      console.log(action.payload);
+      action.payload.forEach(item => {
+        answers.push(...item.answer);
+      });
+      state.answers = answers;
+      state.userQuestions = action.payload;
+    })
+    .addCase(fetchUserLike.rejected, (state) => {
+      state.answers = [];
+      state.userQuestions = [];
+    })
+    .addCase(fetchUserFavorite.fulfilled, (state, action) => {
+      if (action.payload === undefined) {
+        state.answers = [];
+        return;
+      }
+      const answers = [];
+      action.payload.forEach(item => {
+        answers.push(...item.answer);
+      });
+      state.answers = answers;
+      state.userQuestions = action.payload;
     });
   },
 });
@@ -102,6 +156,8 @@ export default answerSlice.reducer;
 export const { handleAnswerAction } = answerSlice.actions;
 
 export const selectAnswers = (state) => state.answer.answers;
+export const selectAnswersById = (state, answerQuestionId) => state.answer.answers.find(answer => answer.answerQuestionId === answerQuestionId);
+export const selectUserQuestions = (state) => state.answer.userQuestions;
 export const selectEvaluate = (state) => state.answer.evaluate;
 export const selectStatus = (state) => state.answer.status;
 export const selectCount = (state) => state.answer.count;

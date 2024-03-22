@@ -5,20 +5,20 @@ const initialState = {
   question: {
     questionId: 1,
     questionTitle: '加载中',
-    questionContent: '...',
+    questionContent: '......',
     questionLevel: 1,
   },
   answer: [],
   status: 'idle',
 };
 
-export const fetchQuestion = createAsyncThunk('question/fetchQuestion', async(questionId) => {
+export const fetchChatQuestion = createAsyncThunk('question/fetchChatQuestion', async(questionId) => {
   const response = await http.get('/training/question/getQuestionDetail', { questionId });
   // console.log(response);
   return response.data.data;
 });
 
-export const fetchAnswer = createAsyncThunk('question/fetchAnswer', async(params) => {
+export const fetchChatAnswer = createAsyncThunk('question/fetchChatAnswer', async(params) => {
   const response = await http.post('/training/answer/user', params);
   // console.log(response);
   return response.data.data;
@@ -38,7 +38,7 @@ export const chatSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-    .addCase(fetchQuestion.fulfilled, (state, action) => {
+    .addCase(fetchChatQuestion.fulfilled, (state, action) => {
       state.status = 'succeed';
       state.question = action.payload;
     });
